@@ -1,0 +1,160 @@
+---
+title: "Development actions history"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+All commands that you use to use when developing packages...
+
+# First time just after creating the project
+
+- Fill the following chunk to create the DESCRIPTION of your package
+
+```{r description, eval=FALSE}
+# Describe your package
+fusen::fill_description(
+  pkg = here::here(),
+  fields = list(
+    Title = "Housing Data For Luxembourg",
+    Description = "This package contains functions to get, clean and analyse housing price data for Luxembourg.",
+    `Authors@R` = c(
+      person("Bruno", "Rodrigues", email = "bruno@brodrigues.co", role = c("aut", "cre"), comment = c(ORCID = "0000-0002-3211-3689"))
+    )
+  )
+)
+# Define License with use_*_license()
+usethis::use_gpl3_license()
+```
+
+# Start using git
+
+Not required, since we are already on a repository.
+
+```{r, eval=FALSE}
+#usethis::use_git()
+# Deal with classical files to ignore
+#usethis::git_vaccinate()
+# Use main for primary branch
+#usethis::git_default_branch_rename()
+```
+
+# Set extra sources of documentation
+
+```{r, eval=FALSE}
+# Install a first time
+remotes::install_local()
+# README
+usethis::use_readme_rmd()
+# Code of Conduct
+usethis::use_code_of_conduct("contact@fake.com")
+# NEWS
+usethis::use_news_md()
+```
+
+**From now, you will need to "inflate" your package at least once to be able to use the following commands. Let's go to your flat template, and come back here later if/when needed.**
+
+# Inflate save_data.Rmd
+
+Start by inflating `dev/save_data.Rmd`:
+
+```{r development-inflate, eval=FALSE}
+# Run but keep eval=FALSE to avoid infinite loop
+# Execute in the console directly
+fusen::inflate(flat_file = "dev/save_data.Rmd",
+               vignette_name = "Saving the data",
+               overwrite = T)
+```
+
+This will put everything in the right place to get started. We then continue by
+adding the datasets.
+
+# Included datasets
+
+The datasets created in the `save_data.Rmd` have still to be saved into the
+`data/` folder of the package. This will make the datasets available using
+data("commune_level_data"). But the package has to be inflated once at least
+before being able to save the data and document it. We are going to knit the
+vignette generated from `save_data.Rmd` for this. This vignette contains all the
+calls needed to save the data. Then, we are going to use `usethis::use_data()`
+to save the datasets. Finally, we are going to inflate another Rmd which
+contains the datasets’ documentation We knit the vignette into a tempfile()
+because we’re not interested in the output itsedf, but simply want the datasets
+to be generated and saved into the global environment
+
+```{r}
+knitr::knit("vignettes/saving-the-data.Rmd", output = tempfile())
+```
+
+the datasets are now in the global environment, check with `ls()`.
+We can now save them into the `data/` folder of the package:
+
+```{r}
+usethis::use_data(commune_level_data, overwrite = TRUE)
+usethis::use_data(country_level_data, overwrite = TRUE)
+usethis::use_data(communes, overwrite = TRUE)
+```
+
+We now inflate `dev/data_doc.Rmd` to document the datasets but don’t want it to be
+a vignette, so we set the generated vignette name to NA:
+
+```{r}
+fusen::inflate(flat_file = "dev/data_doc.Rmd",
+               vignette_name = NA,
+               overwrite = T)
+```
+
+
+# Package development tools
+## Use once
+
+```{r, eval=FALSE}
+# Pipe
+usethis::use_pipe()
+
+# package-level documentation
+usethis::use_package_doc()
+
+# GitHub
+# Add your credentials for GitHub
+gitcreds::gitcreds_set()
+# Send your project to a new GitHub project
+usethis::use_github()
+
+# Set Continuous Integration
+# _GitHub
+usethis::use_github_action_check_standard()
+usethis::use_github_action("pkgdown")
+usethis::use_github_action("test-coverage")
+# _GitLab
+gitlabr::use_gitlab_ci(type = "check-coverage-pkgdown")
+
+# Add new flat template
+fusen::add_flat_template("add")
+```
+
+## Use everytime needed
+
+```{r}
+# Simulate package installation
+pkgload::load_all()
+
+# Generate documentation and deal with dependencies
+attachment::att_amend_desc()
+
+# Check the package
+devtools::check()
+```
+
+
+# Share the package
+
+```{r}
+# set and try pkgdown documentation website
+usethis::use_pkgdown()
+pkgdown::build_site()
+
+# build the tar.gz with vignettes to share with others
+devtools::build(vignettes = TRUE)
+```
+
