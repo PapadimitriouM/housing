@@ -62,9 +62,11 @@ Start by inflating `dev/save_data.Rmd`:
 # Run but keep eval=FALSE to avoid infinite loop
 # Execute in the console directly
 fusen::inflate(flat_file = "dev/save_data.Rmd",
-               vignette_name = "Saving the data",
+               vignette_name = "dev-save_data",
                overwrite = T)
+
 ```
+
 
 This will put everything in the right place to get started. We then continue by
 adding the datasets.
@@ -83,7 +85,7 @@ because we’re not interested in the output itsedf, but simply want the dataset
 to be generated and saved into the global environment
 
 ```{r}
-knitr::knit("vignettes/saving-the-data.Rmd", output = tempfile())
+knitr::knit("vignettes/dev-save-the-data.Rmd", output = tempfile())
 ```
 
 the datasets are now in the global environment, check with `ls()`.

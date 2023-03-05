@@ -1,10 +1,10 @@
 ---
-title: "Saving the data"
+title: "dev-save_data"
 output: rmarkdown::html_vignette
 author: "Bruno Rodrigues"
 date: "`r Sys.Date()`"
 vignette: >
-  %\VignetteIndexEntry{saving-the-data}
+  %\VignetteIndexEntry{dev-save_data}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
