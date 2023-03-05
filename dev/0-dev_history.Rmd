@@ -85,7 +85,7 @@ because we’re not interested in the output itsedf, but simply want the dataset
 to be generated and saved into the global environment
 
 ```{r}
-knitr::knit("vignettes/dev-save-the-data.Rmd", output = tempfile())
+knitr::knit("vignettes/dev-save_data.Rmd", output = tempfile())
 ```
 
 the datasets are now in the global environment, check with `ls()`.
