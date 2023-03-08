@@ -121,7 +121,7 @@ We now save the dataset in a folder for further analysis (keep chunk option to
 
 ## Functions used for analysis
 
-The following function compute the Laspeyeres prices index:
+The following function computes the Laspeyeres prices index:
 
 
 ```{r examples-get_laspeyeres, eval = FALSE}
