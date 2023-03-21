@@ -17,7 +17,7 @@ test_that("Empty data", {
 
 })
 
-test_that("Empty data", {
+test_that("get_laspeyeres() provides correct answers", {
 
   input_df <- expand.grid(
     list("year" = c(2010, 2011),
@@ -38,8 +38,10 @@ test_that("Empty data", {
   expected_df$pl <- expected_df$average_price_nominal_euros/expected_df$p0 * 100
   expected_df$pl_m2 <- expected_df$average_price_m2_nominal_euros/expected_df$p0_m2 * 100
 
+  commune_level_data <- input_df
+
   expect_equivalent(
-    expected_df, get_laspeyeres(input_df)
+    expected_df, get_laspeyeres(commune_level_data)
   )
 
 })

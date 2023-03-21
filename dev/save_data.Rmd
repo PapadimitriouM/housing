@@ -316,6 +316,9 @@ get_laspeyeres <- function(dataset){
 
   which_dataset <- deparse(substitute(dataset))
 
+  stopifnot("dataset must be one of `commune_level_data` or `country_level_data`" =
+              (which_dataset %in% c("commune_level_data", "country_level_data")))
+
   group_var <- if(grepl("commune", which_dataset)){
                  quo(locality)
                } else {
@@ -373,8 +376,10 @@ test_that("get_laspeyeres() provides correct answers", {
   expected_df$pl <- expected_df$average_price_nominal_euros/expected_df$p0 * 100
   expected_df$pl_m2 <- expected_df$average_price_m2_nominal_euros/expected_df$p0_m2 * 100
 
+  commune_level_data <- input_df
+
   expect_equivalent(
-    expected_df, get_laspeyeres(input_df)
+    expected_df, get_laspeyeres(commune_level_data)
   )
 
 })
