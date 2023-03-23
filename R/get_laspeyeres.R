@@ -38,6 +38,7 @@ get_laspeyeres <- function(dataset){
 
 #' Draw some plots
 #'
+#' @param country_level_data The country level data frame.
 #' @param commune_level_data The commune level data frame.
 #' @param commune The commune to plot.
 #' @importFrom dplyr filter bind_rows
@@ -49,7 +50,7 @@ get_laspeyeres <- function(dataset){
 #' #'commune_level_data_laspeyeres <- get_laspeyeres(commune_level_data)
 #' #'make_plot(commune_level_data_laspeyeres, "Luxembourg")
 #' }
-make_plot <- function(commune_level_data, commune){
+make_plot <- function(country_level_data, commune_level_data, commune){
 
   commune_data <- commune_level_data |>
     filter(locality == commune)

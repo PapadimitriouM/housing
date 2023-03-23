@@ -4,9 +4,11 @@
 \alias{make_plot}
 \title{Draw some plots}
 \usage{
-make_plot(commune_level_data, commune)
+make_plot(country_level_data, commune_level_data, commune)
 }
 \arguments{
+\item{country_level_data}{The country level data frame.}
+
 \item{commune_level_data}{The commune level data frame.}
 
 \item{commune}{The commune to plot.}
