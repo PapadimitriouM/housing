@@ -1,5 +1,5 @@
-library(targets)
 library(tarchetypes)
+library(targets)
 
 tar_option_set(packages = "housing")
 
