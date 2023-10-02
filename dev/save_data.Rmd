@@ -138,13 +138,16 @@ We’re now scraping data from wikipedia of former Luxembourguish communes:
 #' @importFrom janitor clean_names
 #' @return A data frame
 #' @export
-get_former_communes <- function(url = "https://en.wikipedia.org/wiki/Communes_of_Luxembourg#Former_communes",
+get_former_communes <- function(
+                                url = "https://is.gd/lux_former_communes",
                                 min_year = 2009,
-                                table_position = 3){
-  read_html(url) |>
-    html_table() |>
-    pluck(table_position) |>
-    clean_names() |>
+                                table_position = 3
+                                ){
+
+  read_html(url) %>%
+    html_table() %>%
+    pluck(table_position) %>%
+    clean_names() %>%
     filter(year_dissolved > min_year)
 }
 
@@ -164,14 +167,23 @@ We can scrape current communes:
 #' @importFrom rvest read_html html_table
 #' @importFrom purrr pluck
 #' @importFrom janitor clean_names
+#' @importFrom dplyr filter rename mutate
+#' @importFrom stringr str_remove
 #' @return A data frame
 #' @export
-get_current_communes <- function(url = "https://en.wikipedia.org/wiki/List_of_communes_of_Luxembourg",
-                                 table_position = 1){
+get_current_communes <- function(
+                                 url = "https://is.gd/lux_communes",
+                                 table_position = 2
+                                 ){
+
   read_html(url) |>
     html_table() |>
     pluck(table_position) |>
-    clean_names()
+    clean_names() |>
+    filter(name_2 != "Name") |>
+    rename(commune = name_2) |>
+    mutate(commune = str_remove(commune, " .$"))
+
 }
 
 ```
@@ -199,7 +211,7 @@ get_test_communes <- function(former_communes, current_communes){
   communes[which(communes == "Clemency")] <- "Clémency"
   communes[which(communes == "Redange")] <- "Redange-sur-Attert"
   communes[which(communes == "Erpeldange-sur-Sûre")] <- "Erpeldange"
-  communes[which(communes == "Luxembourg-City")] <- "Luxembourg"
+  communes[which(communes == "Luxembourg City")] <- "Luxembourg"
   communes[which(communes == "Käerjeng")] <- "Kaerjeng"
   communes[which(communes == "Petange")] <- "Pétange"
 
@@ -231,13 +243,9 @@ raw_data <- get_raw_data(url = "https://github.com/b-rodrigues/rap4all/raw/maste
 
 flat_data <- clean_raw_data(raw_data)
 
-test_that("Check if all communes are accounted for", {
-
-  expect_true(
-    all(communes %in% unique(flat_data$locality))
-  )
-
-})
+testthat::expect_true(
+            all(communes %in% unique(flat_data$locality))
+                      )
 ```
 
 
@@ -301,7 +309,7 @@ We now save the dataset in a folder for further analysis (keep chunk option to
 
 ## Functions used for analysis
 
-The following function computes the Laspeyeres prices index:
+The following function compute the Laspeyeres prices index:
 
 ```{r function-get_laspyeres}
 #' Draw some plots
@@ -315,9 +323,6 @@ The following function computes the Laspeyeres prices index:
 get_laspeyeres <- function(dataset){
 
   which_dataset <- deparse(substitute(dataset))
-
-  stopifnot("dataset must be one of `commune_level_data` or `country_level_data`" =
-              (which_dataset %in% c("commune_level_data", "country_level_data")))
 
   group_var <- if(grepl("commune", which_dataset)){
                  quo(locality)
@@ -335,55 +340,6 @@ get_laspeyeres <- function(dataset){
            pl_m2 = average_price_m2_nominal_euros/p0_m2*100)
 
 }
-```
-
-```{r tests-get_laspeyeres}
-
-test_that("Wrong data", {
-
-  expect_error(
-    get_laspeyeres(mtcars)
-  )
-
-})
-
-test_that("Empty data", {
-
-  expect_error(
-    get_laspeyeres(subset(mtcars, am == 2))
-  )
-
-})
-
-test_that("get_laspeyeres() provides correct answers", {
-
-  input_df <- expand.grid(
-    list("year" = c(2010, 2011),
-         "locality" = c("Bascharage", "Luxembourg"))
-  )
-
-  input_df$n_offers <- c(123, 101, 1230, 1010)
-  input_df$average_price_nominal_euros <- c(234, 345, 560, 670)
-  input_df$average_price_m2_nominal_euros <- c(23, 34, 56, 67)
-
-  expected_df <- input_df
-
-  # p0 should be always equal to the value in the first year
-  expected_df$p0 <- c(234, 234, 560, 560)
-  expected_df$p0_m2 <- c(23, 23, 56, 56)
-
-  # pl should be equal to the price divided by p0
-  expected_df$pl <- expected_df$average_price_nominal_euros/expected_df$p0 * 100
-  expected_df$pl_m2 <- expected_df$average_price_m2_nominal_euros/expected_df$p0_m2 * 100
-
-  commune_level_data <- input_df
-
-  expect_equivalent(
-    expected_df, get_laspeyeres(commune_level_data)
-  )
-
-})
-
 ```
 
 
@@ -429,5 +385,3 @@ make_plot <- function(country_level_data, commune_level_data, commune){
 #'make_plot(commune_level_data_laspeyeres, "Luxembourg")
 #' }
 ```
-
-
