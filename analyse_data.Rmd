@@ -38,6 +38,5 @@ res <- lapply(communes, function(x){
 })
 
 cat(unlist(res), sep = "\n")
-
 ```
 
